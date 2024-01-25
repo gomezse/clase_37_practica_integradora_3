@@ -2,6 +2,7 @@
 <h2>Bienvenido: {{user.last_name}} - {{user.first_name}}</h2>
 <h4>Tu email es: {{user.email}} </h4>
 
+<a href="http://localhost:8080/api/users/sendmail">Reestablecer Contraseña</a> <br>
 <a href="http://localhost:8080/api/carts/{{user.cart}}">Ver Carrito</a> <br>
 
 <button id="crearTicket" onclick="createTicket(`{{user.cart}}`)">Crear Ticket</button>

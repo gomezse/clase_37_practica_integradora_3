@@ -41,6 +41,10 @@ const usersSchema = new mongoose.Schema({
     enum: ["ADMIN", "PREMIUM", "USER"],
     default: "USER",
   },
+  resetToken: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ResetToken',
+  },
 });
 
 usersSchema.pre("find", function () {
