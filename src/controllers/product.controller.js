@@ -2,6 +2,8 @@ import { productsManager } from '../dao/models/mongoose/ProductsManager.js';
 import { generateProduct } from '../utils/faker.js';
 import CustomError from '../errors/error.generator.js';
 import { ErrorsMessages,ErrorsName } from '../errors/error.enum.js';
+import config from "../utils/config.js";
+import jwt from "jsonwebtoken";
 
 const getAll = async (req, res) => {
     try {
@@ -33,15 +35,31 @@ const getById = async (req, res) => {
 
 
 const addProduct= async (req, res) => {
-    const { title, description, code, price, stock, category, thumbnails, status } = req.body;
+    const { title, description, code, price, stock, category} = req.body;
+    
+    
+    const user = jwt.verify(req.cookies.token, config.secretKeyJWT);
 
     if (!title || !description || !code || !price || !stock || !category) {
         return res.status(400).json({ message: `Required data is misssing` });
     }
 
+   
+
     try {
+        if(req.body.id){
+            const product = await productsManager.findById(req.body.id);
+            
+
+            if(product){
+                const updatedProduct= productsManager.updateOne(product._id,{...req.body,owner:user.role=='PREMIUM'?user.email:'admin'})
+                res.status(200).json({ message: 'Product updated', product: updatedProduct });
+            }
+        }
         
-        const newProduct = await productsManager.createOne(req.body);        
+        delete req.body.id;
+        const newProduct = await productsManager.createOne({...req.body,owner:user.role=='PREMIUM'?user.email:'admin'});   
+        // console.log('new product',newProduct);     
         if (newProduct.code === 11000) {
 
             CustomError.generateErrorMessage(ErrorsMessages.PRODUCT_ALREADY_EXISTS,400,ErrorsName.PRODUCT_ALREADY_EXISTS);        

@@ -1,3 +1,4 @@
+import { usersManager } from '../dao/models/mongoose/UsersManager.js';
 import {userService} from '../services/user.service.js';
 
 const getUser = async (req, res) => {
@@ -92,16 +93,22 @@ const resetPasswordPOST= async (req,res)=>{
   res.send('Contraseña restablecida exitosamente.');
 }
 
-const premium= (req,res)=>{
-  /*obtener id por params  
-  buscar usuario por id
-   - si no existe -> devolver error de que no existe
-   -caso de que exista :
-    -revisar si rol esta incluido en premium o user
-      - si no esta incluido -> devolver error por rol no permitido para la operacion.
-      - si está incluido hacer el switch correspondiente dependiendo del rol del usuario.
-  */
-  res.send('Modificacion realizada con exito');
+const premium= async (req,res)=>{
+
+const user = await usersManager.findById(req.params.id);
+const ROLES_ADMITIDOS =["PREMIUM","USER"];
+if(!user){
+  return res.status(400).json({message:"User not found"});
+}
+
+
+if(ROLES_ADMITIDOS.includes(user.role)){
+  user.role = ROLES_ADMITIDOS.filter(rol=> rol != user.role);
+  await user.save();
+  return res.status(200).json({message:"Role updated",usuario:user});
+}
+
+return res.status(400).json({message:"Role cannot be modified",usuario:user});
 }
 export const userController = {
   "getUser": getUser,

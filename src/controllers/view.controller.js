@@ -96,6 +96,60 @@ const loggerTest = (req, res) => {
     res.status(200).json({ message: 'Logger ejecutado.' });
 }
 
+const addProduct= (req, res) => {
+    const   product={
+            title:"",
+            description:"",
+            code:"",
+            price:0,
+            stock:0,
+            category:"",        
+            }             
+//revisar que no sea un update...        
+    res.render("product",{product:product});
+}  
+
+const updateProduct= async (req, res) => {
+    
+    // const user = jwt.verify(req.cookies.token, config.secretKeyJWT);
+   
+    const product = await productsManager.findById(req.params.pid);
+   
+    if (!product) {
+        return res.status(400).json({ message: 'Producto not found' });
+    } 
+    productsManager.updateOne(req.params.pid, product);
+    
+    const productObject = product.toObject();
+  
+    res.render("product-update",{product:productObject});
+} 
+
+const deleteProduct= async (req, res) => {
+    
+    const user = jwt.verify(req.cookies.token, config.secretKeyJWT);
+    
+    const product = await productsManager.findById(req.params.pid);
+    if (!product) {
+        
+        return res.status(400).json({ message: 'Product not found' });
+    }
+
+    if(user.role=='ADMIN'){
+        const deletedProduct = productsManager.deleteOne(req.params.pid);
+        return res.status(200).json({message: 'Product deleted by ADMIN',product:deletedProduct});    
+    } 
+    
+    if(user.email != product.owner){
+        return res.status(401).json({ message: 'You do not have permissions to remove this product' });
+    } 
+      
+    
+    const deletedProduct = productsManager.deleteOne(req.params.pid);
+    return res.status(200).json({message: 'Product deleted by PREMIUM',product:deletedProduct});        
+} 
+
+
 export const viewRouter = {
     "chat":chat,
     "products":products,
@@ -107,5 +161,8 @@ export const viewRouter = {
     "error":error,
     "errorLogin":errorLogin,
     "message":message,
-    "loggerTest":loggerTest
+    "loggerTest":loggerTest,
+    "addProduct":addProduct,
+    "updateProduct":updateProduct,
+    "deleteProduct":deleteProduct,
 }

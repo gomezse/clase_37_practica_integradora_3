@@ -2,7 +2,9 @@ import { cartsManager } from '../dao/models/mongoose/CartsManager.js';
 import { cartService } from '../services/carts.service.js';
 import CustomError from '../errors/error.generator.js';
 import { ErrorsMessages,ErrorsName } from '../errors/error.enum.js';
-
+import {logger} from "../utils/logger.js"
+import config from "../utils/config.js";
+import jwt from "jsonwebtoken";
 
 const addCart =  async (req, res) => {
     try {
@@ -36,6 +38,11 @@ const addProductToCart= async (req, res) => {
     const { cid, pid } = req.params;
 
     try {
+        const user = jwt.verify(req.cookies.token, config.secretKeyJWT);
+        if (user.role == 'PREMIUM' && user.email != req.body.email){
+            return res.status(401).json({ message: 'You do not have permissions to add this product at cart' });
+        }
+
         const newProduct = await cartsManager.addProductToCart(cid, pid);
         logger.info('Product added to cart', { cartId: cid, productId: pid });
         res.status(200).json({ message: 'Product added to cart', product: newProduct });
@@ -132,5 +139,3 @@ export const cartController={
     "updateAllProducts":updateAllProducts,
     "getPurchase":getPurchase
 }
-
-// export default router;
