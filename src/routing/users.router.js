@@ -12,5 +12,5 @@ router.post("/",userController.create);
 router.post("/sendmail",userController.sendmail);
 router.get("/resetPassword/:token",userController.resetPasswordGET);
 router.post("/resetPassword/:token",userController.resetPasswordPOST);
-router.post("/premium/:uid",userController.premium);
+router.get("/premium/:uid",userController.premium);
 export default router;

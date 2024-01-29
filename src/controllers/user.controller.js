@@ -95,7 +95,8 @@ const resetPasswordPOST= async (req,res)=>{
 
 const premium= async (req,res)=>{
 
-const user = await usersManager.findById(req.params.id);
+const user = await usersManager.findById(req.params.uid);
+console.log(user);
 const ROLES_ADMITIDOS =["PREMIUM","USER"];
 if(!user){
   return res.status(400).json({message:"User not found"});
@@ -103,7 +104,7 @@ if(!user){
 
 
 if(ROLES_ADMITIDOS.includes(user.role)){
-  user.role = ROLES_ADMITIDOS.filter(rol=> rol != user.role);
+  user.role = ROLES_ADMITIDOS.filter(rol => rol !== user.role)[0];
   await user.save();
   return res.status(200).json({message:"Role updated",usuario:user});
 }
