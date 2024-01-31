@@ -7,6 +7,7 @@ import CustomError from '../errors/error.generator.js';
 import { ErrorsMessages,ErrorsName } from '../errors/error.enum.js';
 import { cartsManager } from "../dao/models/mongoose/CartsManager.js";
 import config from "../utils/config.js";
+import { ResetToken } from "../models/mongoose/resetToken.model.js";
 
 
 const signup = async (req, res) => {
@@ -108,18 +109,43 @@ const current = (req, res, next) => {
 const restaurar =  async (req, res) => {
   const { email, password } = req.body;
   try {
+   
     const user = await usersManager.findByEmail(email);
+    
     if (!user) {
       return res.redirect("/");
     }
-    const hashedPassword = await hashData(password);
-    user.password = hashedPassword;
-    await user.save();
-    res.status(200).json({ message: "Password updated" });
+
+    const resetToken = await ResetToken.findById(user.resetToken._id);
+    
+    if (!resetToken || !resetToken.user) {
+      return res.status(404).send('Token no válido');
+    }
+  
+    
+     // Verificar si el token ha expirado
+    if (resetToken.createdAt < Date.now()) {    
+      return res.redirect('/profile');
+    }
+
+    const isPasswordValid = await compareData(password, user.password)
+ 
+    if(!isPasswordValid) {      
+      const hashedPassword = await hashData(password);
+      user.password = hashedPassword
+      user.save();
+      res.json({message:"Contraseña reestablecida con éxito."});
+    }else{
+      res.json({message:"No puede poner la misma clave que tenia."});
+    }
+    
+   
   } catch (error) {
+    console.log('error',error);
     CustomError.generateErrorMessage(ErrorsMessages.ERROR_INTERNAL,500,ErrorsName.ERROR_INTERNAL);   
   }
 }
+
 
 export const  sessionController ={
     "signup":signup,

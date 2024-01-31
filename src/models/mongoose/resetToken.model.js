@@ -12,8 +12,8 @@ const resetTokenSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-    expires: 3600, // Expira en 1 hora (en segundos)
+    default: () => new Date(Date.now() + 60 * 60 * 1000),
+    // expires: 3600, // Expira en 1 hora (en segundos)
   },
 });
 

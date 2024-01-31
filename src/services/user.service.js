@@ -34,6 +34,13 @@ class UserService {
     return usersManager.deleteOne(id);
   }
 
+  async findByEmail(email){
+     
+      const user = await usersManager.findByEmail(email); 
+    
+      return user;    
+  }
+
 
 }
 

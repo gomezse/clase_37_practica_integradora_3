@@ -1,14 +1,22 @@
 # **Práctica Integradora 3 **.
 > [!IMPORTANT]
-> Sigue en proceso de desarrollo, tarea aun no finalizada.
+> Recordar ingresar al login para poder llevar a cabo los servicios.
+
+>[!IMPORTANT]
+>Recordar configurar en el environment el mail al cual se desea enviar el link de reestablecimiento.
 
 >[!TIP]
->En el Readme se encuentran los endpoint a ejecutar dependendiendo el modo de environment elegido.
+>Leer los items y temas enumerados para poder realizar de forma sencilla las pruebas del entregable.
+>Se han creado 3 usuarios con 3 roles diferentes para poder realizar las prubeas.
 
-# nodemon src/app.js -m=production 
-# nodemon src/app.js -m=development 
+# Ejecutar para iniciar la aplicacion: nodemon src/app.js -m=production 
 
+## Usuarios brindados para explorar:
+* Usuario 1 --> email: a@a.com ,password:123 ,role:admin
 
+* Usuario 2 --> email: b@b.com, password:123, role:premium
+
+* Usuario 3 --> email: c@c.com, password:123, role:user
 
 ## Archivos Involucrados en el entregable:
 
@@ -17,11 +25,27 @@
 
 * Se creó el archivo resetToken con el fin de controlar la expiracion del mismo a la hora de enviar el email.
 * Se agregó en user.model.js el campo resetToken
-* Se agregó el boton para reestablecer contraseña en el handlebars "profile.handlebars"
+* Se agregó el link para reestablecer contraseña en el handlebars "profile.handlebars"
 
 ## VERIFICAICON DE ROLES PARA REALIZAR METODOS -> authMiddleware("ADMIN,PREMIUM")
  Los permisos para opciones se encuentran en la carpeta de middlewares.
 
+## Reestablecer contraseña por mail:
+* En el archivo .env.production, modificar el valor de la variable de entorno donde se va a enviar el mail de reestablecimiento ( en estos casos no se trabaja con los mails que se hace el login, ya que se pueden crear usuarios ficticios con mails que no existan con el fin de agilizar las pruebas, por eso se define en este archivo).
+
+* Loguearse con un user: (ejemplo: mail:c@c.com ,password:12345) en el endpoint: http://localhost:8084/login 
+
+* Ingresar al perfil en http://localhost:8084/profile y presionar en "Reestablecer contraseña". ( se enviará el correo al email puesto en el primer paso)
+
+* Ingresar al link del mail, que llevara a la pantalla para restaurar.
+
+* Repetir el mail con el que  se hizo el login ("c@c.com" en este caso). Y modificar la clave.
++   Casos posibles:
+  + Token expirado: devuelve a la pantalla del perfil para volver a tener la posibilidad de "Reestablecer contraseña" (Para controlar la expiración se controla la fecha actual con la fecha que se generó el token, la cual esta definida en el modelo para que sea una hora posterior a la que se crea el token).
+  + Contraseña actual = que contraseña anterior , arroja error.
+  + Constaseña actual != contraseña anterior, ok.
+
+* Presionar en reestablecer.Una vez reestablecido. Probar nuevamente ingresar al endpoint del login e intentar acceder con la contraseña antigua (deberia no poderse). Luego verificar la contraseña modificada y debería poder loguearse con éxito.
 
 ## Cambio de Rol.
 * Se definio el endpoint http://localhost:8084/api/users/premium/:uid con el fin de cambiar de roles entre PREMIUM y USER.
@@ -45,6 +69,6 @@
 * El usuario PREMIUM solo podrá borrar productos que le pertenecen.
 * El usuario ADMIN puede eliminar cualquier producto.
 
-* MODIFICACIÓN.
+* MODIFICACIÓN. (revisar)
 * Se creó el endpoint para acceder a la modificacion de un producto: http://localhost:8084/product/65b6ed089c0590128ed1c913
 

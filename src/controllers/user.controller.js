@@ -1,5 +1,9 @@
 import { usersManager } from '../dao/models/mongoose/UsersManager.js';
 import {userService} from '../services/user.service.js';
+import crypto from 'crypto-browserify';
+import { ResetToken } from '../models/mongoose/resetToken.model.js';
+import {transporter} from "../utils/nodemailer.js";
+import config from "../utils/config.js";
 
 const getUser = async (req, res) => {
   res.json({
@@ -16,9 +20,10 @@ const create =async (req, res) => {
 
 const sendmail= async(req,res)=>{
   const { email } = req.body;
-
+console.log("entro al email",email);
   // Buscar el usuario por correo electrónico
-  const user = await usersModel.findOne({ email });
+  const user = await userService.findByEmail(email);
+
 
   if (!user) {
     return res.status(404).send('Usuario no encontrado');
@@ -26,77 +31,33 @@ const sendmail= async(req,res)=>{
 
   // Crear un token único y almacenarlo en la base de datos
   const token = crypto.randomBytes(32).toString('hex');
+
   const resetToken = await ResetToken.create({ user: user._id, token });
+  
+  user.resetToken=resetToken;
+
+  user.save();
 
   // Enviar correo con el enlace de restablecimiento
-  const resetUrl = `http://localhost:8080/api/restaurar`;
+  const resetUrl = `http://localhost:8084/restaurar`;
   const mailOptions = {
-    from: 'gomezsebastian909@gmail.com',
-    to: email,
+    from: config.mail_reestablecer,
+    // to: email,
+    to: config.mail_reestablecer,
     subject: 'Restablecer Contraseña',
     html: `<p>Haz clic <a href="${resetUrl}">aquí</a> para restablecer tu contraseña.</p>`,
   };
 
   await transporter.sendMail(mailOptions);
-  res.send('Correo de restablecimiento enviado.');
+  // res.send('Correo de restablecimiento enviado.');
+  res.json({message:'Correo de restablecimiento enviado.'});
 }
 
-const resetPasswordGET= async (req,res)=>{
-  const { token } = req.params;
 
-  // Buscar el token en la base de datos
-  const resetToken = await ResetToken.findOne({ token }).populate('user');
-
-  if (!resetToken || !resetToken.user) {
-    return res.status(404).send('Token no válido');
-  }
-
-  // Verificar si el token ha expirado
-  if (resetToken.createdAt < Date.now()) {
-    // Aquí deberías redirigir a una vista para generar un nuevo token
-    return res.redirect('/generar-nuevo-token');
-  }
-
-  // Renderizar la vista para restablecer la contraseña con el token
-  res.render('resetPassword', { token });
-}
-
-const resetPasswordPOST= async (req,res)=>{
-  const { token } = req.params;
-  const { password } = req.body;
-
-  // Buscar el token en la base de datos  
-  const resetToken = await ResetToken.findOne({ token }).populate('user');
-
-  if (!resetToken || !resetToken.user) {
-    return res.status(404).send('Token no válido');
-  }
-
-  // Verificar si el token ha expirado
-  if (resetToken.createdAt < Date.now()) {
-    // Aquí deberías redirigir a una vista para generar un nuevo token
-    return res.redirect('/generar-nuevo-token');
-  }
-
-  // Verificar si la contraseña es diferente a la actual
-  if (password === resetToken.user.password) {
-    return res.status(400).send('La nueva contraseña debe ser diferente a la actual');
-  }
-
-  // Actualizar la contraseña del usuario
-  resetToken.user.password = password;
-  await resetToken.user.save();
-
-  // Eliminar el token de restablecimiento de la base de datos
-  await resetToken.remove();
-
-  res.send('Contraseña restablecida exitosamente.');
-}
 
 const premium= async (req,res)=>{
 
 const user = await usersManager.findById(req.params.uid);
-console.log(user);
 const ROLES_ADMITIDOS =["PREMIUM","USER"];
 if(!user){
   return res.status(400).json({message:"User not found"});
@@ -115,7 +76,5 @@ export const userController = {
   "getUser": getUser,
   "create":create,
   "sendmail":sendmail,
-  "resetPasswordGET":resetPasswordGET,
-  "resetPasswordPOST":resetPasswordPOST,
   "premium":premium
 };

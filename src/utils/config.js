@@ -23,5 +23,6 @@ export default{
     "nodemailerUser":process.env.NODEMAILER_USER,
     "nodemailerPassword":process.env.NODEMAILER_PASSWORD,
     "rolUser":process.env.ROLE_USER,
-    "environment":process.env.ENVIRONMENT
+    "environment":process.env.ENVIRONMENT,
+    "mail_reestablecer":process.env.MAIL_PARA_REESTABLECER
 }
