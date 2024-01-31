@@ -1,4 +1,4 @@
-# **Práctica Integradora 3 **.
+# **Práctica Integradora 3**
 > [!IMPORTANT]
 > Recordar ingresar al login para poder llevar a cabo los servicios.
 
