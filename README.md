@@ -9,7 +9,7 @@
 >Leer los items y temas enumerados para poder realizar de forma sencilla las pruebas del entregable.
 >Se han creado 3 usuarios con 3 roles diferentes para poder realizar las prubeas.
 
-# Ejecutar para iniciar la aplicacion: nodemon src/app.js -m=production 
+# Ejecutar para iniciar la aplicacion: nodemon src/app.js -m production 
 
 ## Usuarios brindados para explorar:
 * Usuario 1 --> email: a@a.com ,password:123 ,role:admin
@@ -33,13 +33,13 @@
 ## Reestablecer contraseña por mail:
 * En el archivo .env.production, modificar el valor de la variable de entorno donde se va a enviar el mail de reestablecimiento ( en estos casos no se trabaja con los mails que se hace el login, ya que se pueden crear usuarios ficticios con mails que no existan con el fin de agilizar las pruebas, por eso se define en este archivo).
 
-* Loguearse con un user: (ejemplo: mail:c@c.com ,password:12345) en el endpoint: http://localhost:8084/login 
+* Loguearse con un user: (ejemplo: mail:a@a.com ,password:123) en el endpoint: http://localhost:8084/login 
 
 * Ingresar al perfil en http://localhost:8084/profile y presionar en "Reestablecer contraseña". ( se enviará el correo al email puesto en el primer paso)
 
 * Ingresar al link del mail, que llevara a la pantalla para restaurar.
 
-* Repetir el mail con el que  se hizo el login ("c@c.com" en este caso). Y modificar la clave.
+* Repetir el mail con el que  se hizo el login ("a@a.com" en este caso). Y modificar la clave.
 +   Casos posibles:
   + Token expirado: devuelve a la pantalla del perfil para volver a tener la posibilidad de "Reestablecer contraseña" (Para controlar la expiración se controla la fecha actual con la fecha que se generó el token, la cual esta definida en el modelo para que sea una hora posterior a la que se crea el token).
   + Contraseña actual = que contraseña anterior , arroja error.

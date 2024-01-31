@@ -20,8 +20,7 @@ const create =async (req, res) => {
 
 const sendmail= async(req,res)=>{
   const { email } = req.body;
-console.log("entro al email",email);
-  // Buscar el usuario por correo electrónico
+
   const user = await userService.findByEmail(email);
 
 
@@ -29,7 +28,6 @@ console.log("entro al email",email);
     return res.status(404).send('Usuario no encontrado');
   }
 
-  // Crear un token único y almacenarlo en la base de datos
   const token = crypto.randomBytes(32).toString('hex');
 
   const resetToken = await ResetToken.create({ user: user._id, token });
@@ -38,7 +36,7 @@ console.log("entro al email",email);
 
   user.save();
 
-  // Enviar correo con el enlace de restablecimiento
+
   const resetUrl = `http://localhost:8084/restaurar`;
   const mailOptions = {
     from: config.mail_reestablecer,
@@ -49,7 +47,6 @@ console.log("entro al email",email);
   };
 
   await transporter.sendMail(mailOptions);
-  // res.send('Correo de restablecimiento enviado.');
   res.json({message:'Correo de restablecimiento enviado.'});
 }
 
