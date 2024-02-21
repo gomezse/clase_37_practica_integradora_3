@@ -37,7 +37,7 @@ const sendmail= async(req,res)=>{
   user.save();
 
 
-  const resetUrl = `http://localhost:8084/restaurar`;
+  const resetUrl = `http://localhost:8080/restaurar`;
   const mailOptions = {
     from: config.mail_reestablecer,
     // to: email,
@@ -69,9 +69,67 @@ if(ROLES_ADMITIDOS.includes(user.role)){
 
 return res.status(400).json({message:"Role cannot be modified",usuario:user});
 }
+
+const reestablecer= async(req,res)=>{
+  const { email } = req.body;
+
+  const user = await userService.findByEmail(email);
+
+
+  if (!user) {
+    return res.status(404).send('Usuario no encontrado');
+  }
+
+  const token = crypto.randomBytes(32).toString('hex');
+
+  const resetToken = await ResetToken.create({ user: user._id, token });
+  
+  user.resetToken=resetToken;
+
+  user.save();
+
+
+  const resetUrl = `http://localhost:8080/restaurar`;
+  const mailOptions = {
+    from: config.mail_reestablecer,
+    // to: email,
+    to: email,
+    subject: 'Restablecer Contraseña',
+    html: `<p>Haz clic <a href="${resetUrl}">aquí</a> para restablecer tu contraseña.</p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+  res.json({message:'Correo de restablecimiento enviado.'});
+}
+
+const reestablecerSinMail= async(req,res)=>{
+  const { email } = req.body;
+
+  const user = await userService.findByEmail(email);
+
+
+  if (!user) {
+    return res.status(404).send('Usuario no encontrado');
+  }
+
+  const token = crypto.randomBytes(32).toString('hex');
+
+  const resetToken = await ResetToken.create({ user: user._id, token });
+  
+  user.resetToken=resetToken;
+
+  user.save();
+
+
+  res.redirect('/restaurar');
+}
+
+
 export const userController = {
   "getUser": getUser,
   "create":create,
   "sendmail":sendmail,
-  "premium":premium
+  "premium":premium,
+  "reestablecer":reestablecer,
+  "reestablecerSinMail":reestablecerSinMail
 };

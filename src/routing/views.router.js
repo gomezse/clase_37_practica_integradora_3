@@ -12,7 +12,8 @@ router.get(`/carts/:cid`,viewRouter.cartId);
 router.get("/login",viewRouter.login);
 router.get("/signup",viewRouter.signup);
 router.get("/profile",viewRouter.profile);
-router.get("/restaurar",jwtValidation,viewRouter.restaurar);
+// router.get("/restaurar",jwtValidation,viewRouter.restaurar);
+router.get("/restaurar",viewRouter.restaurar);
 router.get("/error",viewRouter.error);
 router.get("/error-login",viewRouter.errorLogin);
 router.get("/message",authMiddleware("USER"),viewRouter.message);
@@ -20,6 +21,8 @@ router.get("/loggerTest",viewRouter.loggerTest);
 router.get("/add-product",viewRouter.addProduct);
 router.get("/product/:pid",viewRouter.updateProduct);
 router.get("/delete-product/:pid",authMiddleware("ADMIN,PREMIUM"),viewRouter.deleteProduct);
+router.get("/reestablecer-con-envio-mail",viewRouter.reestablecer);
+router.get("/reestablecer-sin-envio-mail",viewRouter.reestablecerSinMail);
 
 
 export default router;

@@ -11,4 +11,6 @@ router.get('/:idUser',jwtValidation,authMiddleware(["ADMIN"]),
 router.post("/",userController.create);    
 router.post("/sendmail",userController.sendmail);
 router.get("/premium/:uid",userController.premium);
+router.post("/reestablecer-con-envio-mail",userController.reestablecer);
+router.post("/reestablecer-sin-envio-mail",userController.reestablecerSinMail);
 export default router;

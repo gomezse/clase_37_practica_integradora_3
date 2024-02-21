@@ -156,7 +156,8 @@ export const  sessionController ={
     "callbackGoogle":callbackGoogle,
     "signout":signout,
     "current":current,
-    "restaurar":restaurar
+    "restaurar":restaurar,
+   
 };
 
 

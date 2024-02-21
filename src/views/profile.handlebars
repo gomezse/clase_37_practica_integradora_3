@@ -3,7 +3,7 @@
 <h4>Tu email es: {{user.email}} </h4>
 <input type="hidden" name="" id="email_user" value="{{user.email}}">
 
-{{!-- <a href="http://localhost:8084/api/users/sendmail">Reestablecer Contraseña</a> <br> --}}
+{{!-- <a href="http://localhost:8080/api/users/sendmail">Reestablecer Contraseña</a> <br> --}}
 <a id="sendMailButton" href="#">Reestablecer Contraseña</a> <br>
 
 <a href="http://localhost:8080/api/carts/{{user.cart}}">Ver Carrito</a> <br>
@@ -124,7 +124,7 @@ document.getElementById('sendMailButton').addEventListener('click', async functi
 
   const email =  document.getElementById('email_user').value; 
 
-  const response = await fetch('http://localhost:8084/api/users/sendmail', {
+  const response = await fetch('http://localhost:8080/api/users/sendmail', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
